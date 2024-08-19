@@ -23,17 +23,17 @@ class CashWebAPI{
     /** @var String $apiKey API Key reference */
     private String $apiKey = '';
 
-    /** @var String $administration Administation code */
-    private ?String $administation = '';
+    /** @var String $administration administration code */
+    private ?String $administration = '';
 
     /**
      * Initialize the Cash API
      * @param String $apiKey API Key For the REST API
-     * @param String $administation Administration to use
+     * @param String $administration Administration to use
      */
     public function __construct(String $apiKey, ?String $administration = NULL){
         $this->apiKey = $apiKey;
-        $this->administation = $administration;
+        $this->administration = $administration;
 
         // Create the auto load register function
         spl_autoload_register(function($class){
@@ -57,11 +57,11 @@ class CashWebAPI{
      */
     public function fetchAdministrations(){
         // fetch the administrations
-        $administations = $this->executeRequest('GET', '/administrations');
+        $administrations = $this->executeRequest('GET', '/administrations');
         // create dataset array
         $dataset = array();
         // loop through the administrations
-        foreach($administations['Dir'][0]['Adms']['Adm'] as $administration){
+        foreach($administrations['Dir'][0]['Adms']['Adm'] as $administration){
             array_push($dataset, new Administration($administration['Code'], $administration['Name']));
         };
         // Return the dataset
@@ -75,7 +75,7 @@ class CashWebAPI{
      */
     public function export(String $record, Array $params = array()){
         return $this->executeRequest('EXPORT', '/get/index/'.$record.'/?'.
-            http_build_query(array('admin' => $this->administation, 'params' => implode('|', $params))));
+            http_build_query(array('admin' => $this->administration, 'params' => implode('|', $params))));
     }
 
     /**
@@ -84,7 +84,7 @@ class CashWebAPI{
      */
     public function import(Array $data){
         return $this->executeRequest('IMPORT', '/import', array(
-            'admin' => $this->administation,
+            'admin' => $this->administration,
             'format' => 0,
             'content' => array(
                 'cash' => $data
