@@ -74,7 +74,7 @@ class LedgerMutations extends AbstractLogic{
             ->export('8504', array($year, $journal));
 
         // return the next sequence number
-        return $response['R8504']['Z0303'];
+        return intval($response['R8504']['Z0303'])+1;
     }
 
 }
