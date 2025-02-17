@@ -51,15 +51,40 @@ class AbstractLogic{
      * @param Array $array Array of abstact records to import
      */
     protected function importArray(Array $array){
+        // Import the data
+        $this->getConnection()->import(self::assemble($array));
+    }
+
+    /**
+     * Assemble a array of data entries
+     * @param Array $array Array of abstact records to assemble
+     * @return Array
+     */
+    public static function assemble(Array $array): Array{
         // Prepare the chash import array
         $cash = array(); foreach($array as $record){
-            if(!is_a('CashWeb\Records\AbstractRecord', $record)){
+            if(!is_a($record, 'CashWeb\Records\AbstractRecord')){
                 throw new CashWebException('Record is not a valid CashWeb Record.');
             }
             array_push($cash, $record->assemble());
         }
-        // Import the data
-        $this->getConnection()->import($cash);
+        return $cash;
+    }
+
+    /**
+     * Assemble a array of data entries
+     * @param Array $array Array of abstact records to assemble
+     * @return Array
+     */
+    public static function toArray(Array $array): Array{
+        // Prepare the chash import array
+        $cash = array(); foreach($array as $record){
+            if(!is_a($record, 'CashWeb\Records\AbstractRecord')){
+                throw new CashWebException('Record is not a valid CashWeb Record.');
+            }
+            array_push($cash, $record->toArray());
+        }
+        return $cash;
     }
 
 }

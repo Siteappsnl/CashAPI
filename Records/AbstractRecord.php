@@ -111,16 +111,17 @@ class AbstractRecord{
                         break;
                     case 'I12,2':
                     case 'I12,2*':
-                        $this->data[$property] = intval($this->data[$property]*100);
+                        $record['F'.$field] = intval($this->data[$property]*100);
                         break;
                     default:
                         $record['F'.$field] = $this->data[$property];
+                        break;
                 }
                 
             }
         }
         // return the record
-        return array('R'.$this->recordIdentifier => $record);
+        return array('R'.$this->recordIdentifier => array($record));
     }
 
     /**

@@ -23,17 +23,17 @@ class CashWebAPI{
     /** @var String $apiKey API Key reference */
     private String $apiKey = '';
 
-    /** @var String $administration administration code */
-    private ?String $administration = '';
+    /** @var String $administration Administation code */
+    private ?String $administation = '';
 
     /**
      * Initialize the Cash API
      * @param String $apiKey API Key For the REST API
-     * @param String $administration Administration to use
+     * @param String $administation Administration to use
      */
     public function __construct(String $apiKey, ?String $administration = NULL){
         $this->apiKey = $apiKey;
-        $this->administration = $administration;
+        $this->administation = $administration;
 
         // Create the auto load register function
         spl_autoload_register(function($class){
@@ -57,11 +57,11 @@ class CashWebAPI{
      */
     public function fetchAdministrations(){
         // fetch the administrations
-        $administrations = $this->executeRequest('GET', '/administrations');
+        $administations = $this->executeRequest('GET', '/administrations');
         // create dataset array
         $dataset = array();
         // loop through the administrations
-        foreach($administrations['Dir'][0]['Adms']['Adm'] as $administration){
+        foreach($administations['Dir'][0]['Adms']['Adm'] as $administration){
             array_push($dataset, new Administration($administration['Code'], $administration['Name']));
         };
         // Return the dataset
@@ -75,7 +75,7 @@ class CashWebAPI{
      */
     public function export(String $record, Array $params = array()){
         return $this->executeRequest('EXPORT', '/get/index/'.$record.'/?'.
-            http_build_query(array('admin' => $this->administration, 'params' => implode('|', $params))));
+            http_build_query(array('admin' => $this->administation, 'params' => implode('|', $params))));
     }
 
     /**
@@ -84,7 +84,7 @@ class CashWebAPI{
      */
     public function import(Array $data){
         return $this->executeRequest('IMPORT', '/import', array(
-            'admin' => $this->administration,
+            'admin' => $this->administation,
             'format' => 0,
             'content' => array(
                 'cash' => $data
@@ -117,20 +117,26 @@ class CashWebAPI{
 			curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
 		}
         // execute the request and fetch the response
-		$responseText = curl_exec($curl);
+		echo $responseText = curl_exec($curl);
         // decode the response
         $responseDecoded = json_decode($responseText, true);
         // extract the httpcode
-		$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		echo $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 		// Close the connection
         curl_close($curl);
         // check if valid JSOn could be parsed
-        if(json_last_error() !== JSON_ERROR_NONE){
+        if($responseText && json_last_error() !== JSON_ERROR_NONE){
             throw new CashWebException('Could not parse CashWeb response.');
         }
         // Check if status is not 200
-        if($httpCode !== 200){
-            throw new CashWebException($responseDecoded['message'] ? $responseDecoded['message'] : 'Unkown CashWeb API Response.');
+        if($httpCode > 400){
+            if($responseDecoded['message']['errors']['error'][0]['message']){
+                throw new CashWebException($responseDecoded['message']['errors']['error'][0]['message']);
+            }
+            if($responseDecoded['error']){
+                throw new CashWebException($responseDecoded['error']);
+            }
+            throw new CashWebException('Unknown CashWeb API Response.');
         }
         // return the decoded response
         return $responseDecoded;
