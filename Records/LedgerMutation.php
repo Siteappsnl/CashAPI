@@ -32,6 +32,7 @@ class LedgerMutation extends AbstractRecord{
         'description' => array('0306', 'L25'),
         'amount' => array('0307', 'I12,2*'),
         'reference' => array('0711', 'S13'),
+        'paymentReference' => array('477', 'S13'),
     );
 
 
