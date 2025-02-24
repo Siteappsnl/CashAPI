@@ -111,7 +111,7 @@ class AbstractRecord{
                         break;
                     case 'I12,2':
                     case 'I12,2*':
-                        $record['F'.$field] = intval($this->data[$property]*100);
+                        $record['F'.$field] = $this->data[$property]*100;
                         break;
                     default:
                         $record['F'.$field] = $this->data[$property];

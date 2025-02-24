@@ -117,25 +117,25 @@ class CashWebAPI{
 			curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
 		}
         // execute the request and fetch the response
-		echo $responseText = curl_exec($curl);
+		$responseText = curl_exec($curl);
         // decode the response
         $responseDecoded = json_decode($responseText, true);
         // extract the httpcode
-		echo $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 		// Close the connection
         curl_close($curl);
         // check if valid JSOn could be parsed
         if($responseText && json_last_error() !== JSON_ERROR_NONE){
             throw new CashWebException('Could not parse CashWeb response.');
         }
-        // Check if status is not 200
+        // check if there was a error message
+        if($responseDecoded['message']['errors']['error'][0]['message']){
+            throw new CashWebException($responseDecoded['message']['errors']['error'][0]['message']);
+        }
+        if($responseDecoded['error']){
+            throw new CashWebException($responseDecoded['error']);
+        }
         if($httpCode > 400){
-            if($responseDecoded['message']['errors']['error'][0]['message']){
-                throw new CashWebException($responseDecoded['message']['errors']['error'][0]['message']);
-            }
-            if($responseDecoded['error']){
-                throw new CashWebException($responseDecoded['error']);
-            }
             throw new CashWebException('Unknown CashWeb API Response.');
         }
         // return the decoded response
