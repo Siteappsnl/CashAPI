@@ -34,21 +34,6 @@ class CashWebAPI{
     public function __construct(String $apiKey, ?String $administration = NULL){
         $this->apiKey = $apiKey;
         $this->administation = $administration;
-
-        // Create the auto load register function
-        spl_autoload_register(function($class){
-            if(str_starts_with($class, 'CashWeb')){
-                // define the class path
-                $classPath = dirname(__FILE__).'/'.str_replace('\\', DIRECTORY_SEPARATOR, substr($class, 8)).'.php';
-                // check if class file exists
-                if(is_file($classPath)){
-                    // require the class path file
-                    require_once($classPath);
-                    return true;
-                }
-            }
-            return false;
-        });
     }
 
     /**

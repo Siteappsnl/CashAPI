@@ -30,7 +30,7 @@ class Outstanding extends AbstractRecord{
         'invoiceNumber' => array('0309', 'N6'),
         'invoiceDate' => array('0314', 'D'),
         'amount' => array('0307', 'I12,2'),
-        'amountOutstaning' => array('0320', 'I12,2'),
+        'amountOutstanding' => array('0320', 'I12,2'),
         'expirationDate' => array('0111', 'D')
     );
 

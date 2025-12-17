@@ -1,0 +1,11 @@
+{
+    "name": "siteapps/cash-api",
+    "description": "Cash API",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "CashWeb\\" : "./"
+        }
+    }
+}
